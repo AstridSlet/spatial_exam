@@ -1,6 +1,6 @@
-<h1 align="center">Spatial Analytics</h1>
+<h1 align="center">Final project: Spatial Analytics</h1>
 <p align="center">
-Final project: Kingfisher birds and water quality in Danish lakes
+Kingfisher birds and water quality in Danish lakes
     <br />
 
 
