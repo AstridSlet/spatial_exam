@@ -1,13 +1,13 @@
-<h1 align="center">Kingfisher birds and water quality in Danish lakes</h1>
+<h1 align="center">Spatial Analytics</h1>
 <p align="center">
-Final project: Spatial Analytics
+Final project: Kingfisher birds and water quality in Danish lakes
     <br />
 
 
 &nbsp;
 &nbsp;
 
-<p align="center"> <img src="readme_images/isfugl.jpg" alt="Logo" width="400" height="400"></a> 
+<p align="center"> <img src="readme_images/isfugl.jpg" alt="Logo" width="400" height="300"></a> 
 
 &nbsp;
 &nbsp;
