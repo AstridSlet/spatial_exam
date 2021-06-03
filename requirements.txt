@@ -1,0 +1,17 @@
+pacman
+dplyr
+stringr
+tidyverse
+pryr
+
+RColorBrewer
+ggplot2
+cowplot
+
+sf
+spatstat
+leaflet
+
+htmltools
+htmlwidgets
+

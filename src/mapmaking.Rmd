@@ -1,0 +1,81 @@
+---
+title: "mapmaking"
+authors: "Sofía Navarro & Astrid Sletten Rybner"
+date: "10/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# set wd to src folder of the cloned repository
+setwd()
+
+# load packages 
+library(pacman)
+pacman::p_load("leaflet", "sf", "htmltools", "htmlwidgets")
+
+```
+
+
+PLOTTING BIRDS AND LAKES TOGETHER: 
+```{r}
+
+# read data
+lakes <- read_sf("../data/data_preprocessed/lakes_preprocessed.shp")
+kingfisher <- read_sf("../data/data_preprocessed/kingfisher_with_crs.shp")
+
+# give lakes shp file same crs as birds (EPSG 4326)
+lakes <- st_transform(lakes, crs = crs(kingfisher))
+
+# subset years
+s2016 <- kingfisher %>% filter(kingfisher$Year==2016)
+s2017 <- kingfisher %>% filter(kingfisher$Year==2017)
+s2018 <- kingfisher %>% filter(kingfisher$Year==2018)
+s2019 <- kingfisher %>% filter(kingfisher$Year==2019)
+s2020 <- kingfisher %>% filter(kingfisher$Year==2020)
+
+
+# define color palette for water quality 
+pal <- colorFactor(
+  palette = c("#006019", "#FFBC0C", "#FF130D"),
+  domain = lakes$wtr_qlt # water quality 
+)
+
+# create map 
+base_map <- leaflet() %>%
+  addTiles() %>%
+  # add base layers
+  addProviderTiles("Esri.WorldTopoMap", group = "Standard map") %>%    
+  addProviderTiles("Esri.WorldGrayCanvas", group = "Simplistic") %>% 
+  addProviderTiles("Esri.WorldImagery", group = "Satelite") %>%    
+  # add water quality 
+  addPolylines(data = lakes, group = "Water quality", 
+               color = ~pal(lakes$wtr_qlt)) %>%
+  # add bird observations
+  addCircleMarkers(data = s2016, group = "Kingfishers 2016", clusterOptions = markerClusterOptions()) %>%
+  addCircleMarkers(data = s2017, group = "Kingfishers 2017", clusterOptions = markerClusterOptions()) %>%
+  addCircleMarkers(data = s2018, group = "Kingfishers 2018", clusterOptions = markerClusterOptions()) %>%
+  addCircleMarkers(data = s2019, group = "Kingfishers 2019", clusterOptions = markerClusterOptions()) %>%
+  addCircleMarkers(data = s2020, group = "Kingfishers 2020", clusterOptions = markerClusterOptions()) %>%
+  # add layers control 
+  addLayersControl(baseGroups = c("Standard map", "Simplistic", "Satelite"), 
+                   overlayGroups = c("Water quality", 
+                                     "Kingfishers 2016", 
+                                     "Kingfishers 2017", 
+                                     "Kingfishers 2018", 
+                                     "Kingfishers 2019", 
+                                     "Kingfishers 2020"),
+                   options = layersControlOptions(collapsed = FALSE)) %>%
+  # add mini map 
+  addMiniMap(tiles = "Esri.WorldTopoMap", toggleDisplay = TRUE,
+    position = "bottomleft") 
+
+# save map 
+saveWidget(base_map, "../output/map_with_layers.html", selfcontained = TRUE)
+
+```
+

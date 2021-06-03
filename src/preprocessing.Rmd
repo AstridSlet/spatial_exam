@@ -1,0 +1,161 @@
+---
+title: "preprocessing"
+authors: "Sofía Navarro & Astrid Sletten Rybner"
+date: "10/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# set wd to src folder of the cloned repository
+setwd() 
+
+# load packages 
+library(pacman)
+pacman::p_load("dplyr", "stringr", "tidyverse", "sf", "RColorBrewer")
+
+```
+
+# 1. PREPROCESSING: BIRD DATA
+```{r}
+
+# list bird files
+files_list <- list.files(path = "../data/data_birds/", pattern = "isfugl_")
+
+# define loader function
+loader <- function(filename){
+  df <- read.csv(paste("data_birds", filename, sep="/"), sep=";", fileEncoding="latin1")
+  df$Year <- str_extract(filename, "\\d{4}")
+  return(df)
+}
+
+# read in files 
+df_all_data <- map_df(files_list, loader)
+
+# subset and rename columns
+df <- df_all_data[c("Year", "Dato", "Antal", "Adfbeskrivelse", "Loknavn", "lok_laengdegrad","lok_breddegrad")]
+df <- df %>% rename(
+    long = lok_laengdegrad,
+    lat = lok_breddegrad
+    )
+
+# inspect observation types (breeeding, feeding, migrating)
+unique(df$Adfbeskrivelse)
+
+# subset only "ynglefugle" and "fouragerende"
+sub1 <- dplyr::filter(df, grepl("Ynglefugle", Adfbeskrivelse))
+sub2 <- dplyr::filter(df, grepl("Fouragerende", Adfbeskrivelse))
+df_sub <- rbind(sub1, sub2) 
+
+# how often do people see more than one bird? 
+df_sub$Antal <- as.factor(df_sub$Antal)
+df_sub %>% group_by(Antal) %>% summarise(count=n()) 
+
+# make one row for each observed bird (eg. 12 birds = 12 rows)
+df_sub$Antal <- as.numeric(df_sub$Antal)
+df_extend <- data.frame(df_sub[rep(seq_len(dim(df_sub)[1]), df_sub$Antal), , drop = FALSE], row.names=NULL)
+
+# inspect observations before/after extending
+nrow(df_sub)
+nrow(df_extend)
+
+# remove rows where no. of observed birds = 0
+df_sub1 <- df_sub[df_sub$Antal != 0, ]
+
+# count of birds observations per year
+df_extend %>% group_by(Year) %>% summarise(count=n()) 
+
+```
+
+
+Give bird data a CRS (the coordinates are from google maps that use EPSG 4326):
+
+```{r}
+
+# replace commas with dots in long/lat columns and make numeric 
+df_extend$long <- df_extend$long %>% str_replace_all("\\,", "\\.") %>% as.numeric()
+df_extend$lat <- df_extend$lat %>% str_replace_all("\\,", "\\.") %>% as.numeric()
+
+# convert the data frame to sf object
+df_crs <- st_as_sf(df_extend, coords = c("long", "lat"), crs = 4326)
+
+# save file 
+st_write(df_crs, "../data/data_preprocessed/kingfisher_with_crs.shp",  layer_options = "GEOMETRY=AS_XY", delete_dsn = T)
+
+```
+
+
+
+# 2. PREPROCESSING: LAKES DATA
+```{r}
+# read file
+lakes_eco <- read_sf("../data/data_water/vp2_2016-soer_okotilstand_samlet.shp")
+
+# subset only columns of interest
+lakes_eco <- lakes_eco[c("VRD_TILST", "NAVN","geometry")]
+
+# check for NA's
+any(is.na(lakes_eco$VRD_TILST))
+
+# count how many of each condition category 
+lakes_eco %>% group_by(as.factor(lakes_eco$VRD_TILST)) %>% summarise(count=n()) 
+
+# remove data points where the condition is unknown (Mp or 0)
+lakes_eco_filtered <- lakes_eco %>% 
+  filter(VRD_TILST != "Mp") %>% filter(VRD_TILST != "0")
+
+# relevel factor levels from good to bad 
+lakes_eco_filtered$VRD_TILST <- factor(lakes_eco_filtered$VRD_TILST, levels = c("Ht", "Gt", "Mt", "Rt", "Dt"))
+
+```
+
+
+Changing from five water quality categories to three categories: 
+```{r}
+
+# adding a water quality column 
+lakes_eco_filtered$wtr_qlt <- lakes_eco_filtered$VRD_TILST
+
+# assign value between 1 and 3 based on the condition level (where 1=best, 2=medium, 3=bad)
+lakes_eco_filtered <- lakes_eco_filtered %>% group_by(VRD_TILST)
+levels(lakes_eco_filtered$wtr_qlt) <- c("1", "1", "2", "3", "3") 
+
+# make quality column numeric 
+lakes_eco_filtered$wtr_qlt <- as.numeric(lakes_eco_filtered$wtr_qlt)
+
+# save preprocessed lakes data 
+st_write(lakes_eco_filtered, "../data/data_preprocessed/lakes_preprocessed.shp",  layer_options = "GEOMETRY=AS_XY", delete_dsn = T)
+
+```
+
+Plotting lakes count, simplified water categories: 
+```{r}
+
+
+# plot the new water categories
+plot <- ggplot(lakes_eco_filtered, aes(x=water_quality)) + geom_bar(aes(fill = water_quality))+ 
+  ylab("Lakes count")+
+  xlab("Water quality group")+
+  ggtitle("Lakes count per water quality group")+
+  theme(legend.position = "none")+
+  theme(axis.title = element_text(size = 20), 
+        plot.title = element_text(size = 20),
+        axis.text = element_text(size = 20)) 
+plot <- plot + scale_fill_manual(values=c("#006019", "#FFBC0C", "#FF130D"))
+
+
+# save plots
+ggsave("lakes_count_water_categories.png", plot = plot, path = "../output/", dpi = 300)
+
+
+
+```
+
+
+
+
+
+

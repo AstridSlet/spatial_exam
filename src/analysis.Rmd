@@ -1,0 +1,217 @@
+---
+title: "Analysis"
+authors: "Sofía Navarro & Astrid Sletten Rybner"
+date: "10/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# set wd to src folder of the cloned repository
+setwd() 
+
+# load packages 
+library(pacman)
+pacman::p_load("dplyr", "stringr", "tidyverse", "sf", "spatstat", "RColorBrewer", "ggplot2", "cowplot", "spatstat", "pryr")
+
+```
+
+# 1. ANALYZING CLUSTERING OF KINGFISHER OBSERVATIONS
+
+Making bird data ready
+```{r}
+# read preprocessed birds data
+kingfisher <- read_sf("../data/data_preprocessed/kingfisher_with_crs.shp")
+
+# subset bird observations per year
+s2016 <- kingfisher %>% filter(kingfisher$Year==2016)
+s2020 <- kingfisher %>% filter(kingfisher$Year==2020)
+
+# define local crs with utm zone for Denmark (zone 32)
+dk_crs = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+# give the bird data local projected crs
+s2016_transformed <- s2016 %>%
+  st_transform(crs=dk_crs)
+s2020_transformed <- s2020 %>%
+  st_transform(crs=dk_crs)
+
+```
+
+
+Making the borders of DK into an owin object to use for defining PPP object:
+```{r}
+
+# read file borders of denmark to use in ppp
+borders <- read_sf("../data/data_country_borders/denmark_administrative_boundaries_province_polygon.shp")
+
+# transform crs to DK utm zone 32
+borders_transformed <- st_transform(borders, crs = crs(s2016_transformed))
+
+# simplify the borders object 
+object_size(borders_transformed)
+borders_simple <- st_simplify(borders_transformed, 
+                            preserveTopology = TRUE, 
+                            dTolerance = 100)
+object_size(borders_simple)
+
+# make simplified borders object into owin object
+borders_ow <- as.owin(borders_simple, fatal = TRUE)
+
+# plot borders 
+plot(borders_ow)
+
+```
+
+
+Making birds coordinates of 2016 and 2020 into seperate columns so they can be used to create ppp object:
+```{r}
+# get just the coordinates of the projected birds coordinates
+s2016_sf <- as_tibble(st_geometry(s2016_transformed))
+s2020_sf <- as_tibble(st_geometry(s2020_transformed))
+
+# seperate coords into two columns
+new16 <-  separate(data = s2016_sf, into= c("X", "Y"),col = geometry, sep = ",")
+new20 <- separate(data = s2020_sf, into= c("X", "Y"),col = geometry, sep = ",")
+
+# clean collumns
+new16_sep  <- new16  %>% 
+  mutate(X = as.numeric(str_extract(new16$X, pattern = "\\d+.\\d+")), 
+         Y = as.numeric(str_extract(new16$Y, pattern = "\\d+.\\d+")))
+
+new20_sep  <- new20  %>% 
+  mutate(X = as.numeric(str_extract(new20$X, pattern = "\\d+.\\d+")), 
+         Y = as.numeric(str_extract(new20$Y, pattern = "\\d+.\\d+")))
+
+# make into data.frames
+new16_sep <- as.data.frame(new16_sep)
+new20_sep <- as.data.frame(new20_sep)
+
+# make a ppp object of birds observations (use min and max longitude and latitude)
+birds_ppp_2016 <- ppp(new16_sep[,1], new16_sep[,2], window = borders_ow)
+birds_ppp_2020 <- ppp(new20_sep[,1], new20_sep[,2], window = borders_ow)
+
+# plot ppp objects
+plot(birds_ppp_2016)
+plot(birds_ppp_2020)
+
+```
+
+
+Compute envelopes of K-function under random locations
+```{r}
+# compute envelopes 
+K_birds_env16 <- envelope(birds_ppp_2016, fun=Kest, nsim=99, rmax= 30000, correction = "border")
+K_birds_env20 <- envelope(birds_ppp_2020, fun=Kest, nsim=99, rmax= 30000, correction = "border")
+
+
+# plot envelopes (insert the full formula to plot K minus pi * r^2)
+jpeg(file="../output/env_plot_2016.jpeg", width=550, height=400)
+plot(K_birds_env16, . - pi* r^2 ~ r,  main="Monte carlo test: K(r) for 2016")
+dev.off()
+
+jpeg(file="../output/env_plot_2020.jpeg", width=550, height=400)
+plot(K_birds_env20, . - pi* r^2 ~ r,  main="Monte carlo test: K(r) for 2020")
+dev.off()
+
+```
+
+
+# 2. CORRELATION TEST: WATER QUALITY AND BIRD COUNT
+
+Computing buffers around all lakes:
+```{r}
+# read pre-processed lakes data
+lakes <- read_sf("../data/data_preprocessed/lakes_preprocessed.shp")
+
+# compute the center points (centroids) of the lakes
+centroids <- st_centroid(lakes)
+
+# plot the center points of the lakes
+plot(st_geometry(lakes))
+plot(centroids, pch = 20, col = "firebrick", add = TRUE)
+
+# make buffers around the center points and give local crs
+lakes_buffer <- centroids %>% 
+  st_transform(crs = dk_crs) %>% 
+  st_buffer(dist = 1000)
+
+# limit the object to just geometry (for plotting)
+lakes_buffer_geom <- st_geometry(lakes_buffer)
+
+# compute the number of features in lakes_buffer_geom
+length(lakes_buffer_geom) # 684 buffers (lakes)
+
+# plot the lakes buffers
+plot(lakes_buffer_geom)
+
+# make into sf objects so centroids can be joined with bird observations
+s2016_transformed <- st_sf(s2016_transformed)
+s2020_transformed <- st_sf(s2020_transformed)
+lakes_buffer_geom <- st_sf(lakes_buffer_geom)
+
+# combine centroids and birds in one object 
+lakes_birds2016 <- st_join(lakes_buffer_geom, s2016_transformed)
+lakes_birds2020 <- st_join(lakes_buffer_geom, s2020_transformed)
+
+# plot the birds in 2016 and 2020 together with buffers
+plot(lakes_buffer_geom)
+plot(s2016_transformed, add=TRUE, pch = 20, col = "red")
+plot(s2020_transformed, add=TRUE, pch = 20, col = "green")
+
+
+
+```
+
+Counting bird observations within buffers:
+```{r}
+# count the number of bird observations within each of the buffers and add this count to the lakes_buffer data frame
+lakes_buffer$birdcount2016 <- lengths(st_intersects(lakes_buffer_geom, s2016_transformed))
+lakes_buffer$birdcount2020 <- lengths(st_intersects(lakes_buffer_geom, s2020_transformed))
+
+```
+
+Plotting mean bird count per water category in 2016 and 2020:
+```{r}
+
+# plot mean bird count per water category 
+plot16 <- ggplot(lakes_buffer, aes(x=wtr_qlt, y=birdcount2016))+
+  geom_bar(stat='identity', fill="forest green")+
+  ylab("Bird count")+
+  xlab("Water quality group")+ggtitle("Bird count 2016")+
+  theme(axis.title = element_text(size = 20), 
+        plot.title = element_text(size = 30),
+        axis.text = element_text(size = 20)) 
+
+
+plot20 <- ggplot(lakes_buffer, aes(x=wtr_qlt, y=birdcount2020))+
+  geom_bar(stat='identity', fill="forest green")+
+  ylab("Bird count")+
+  xlab("Water quality group")+
+  ggtitle("Bird count 2020")+
+  theme(axis.title = element_text(size = 20), 
+        plot.title = element_text(size = 30),
+        axis.text = element_text(size = 20)) 
+
+combined <- cowplot::plot_grid(plot16, plot20)
+
+ggsave("bird_count_water_categories.png", plot = combined, path = "../output/", width = 12, height = 6, dpi = 300)
+
+```
+
+Conducting correlation test between bird count and water quality: 
+```{r}
+# make numeric 
+lakes_buffer$wtr_qlt <- as.numeric(lakes_buffer$wtr_qlt)
+
+# correlation test 2016
+cor.test(x = lakes_buffer$wtr_qlt, y = lakes_buffer$birdcount2016, method = "pearson")
+
+# correlation test 2020
+cor.test(x = lakes_buffer$wtr_qlt, y = lakes_buffer$birdcount2020, method = "pearson")
+```
+
