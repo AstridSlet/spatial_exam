@@ -1,8 +1,10 @@
 <h1 align="center">Final project: Spatial Analytics</h1>
 <p align="center">
-Kingfisher birds and water quality in Danish lakes
+## Kingfisher birds and water quality in Danish lakes
     <br />
-
+    <p align="center">
+        ### By Sofía Navarro and Astrid Sletten Rybner
+        <br />
 
 &nbsp;
 &nbsp;
