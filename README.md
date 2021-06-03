@@ -1,4 +1,8 @@
-# Kingfisher birds and water quality in Danish lakes
+<h1 align="center">Kingfisher birds and water quality in Danish lakes</h1>
+<p align="center">
+Final project: Spatial Analytics
+    <br />
+
 
 &nbsp;
 &nbsp;
