@@ -133,24 +133,22 @@ st_write(lakes_eco_filtered, "../data/data_preprocessed/lakes_preprocessed.shp",
 
 Plotting lakes count, simplified water categories: 
 ```{r}
-
+# make quality column factor for plotting
+lakes_eco_filtered$wtr_qlt <- as.factor(lakes_eco_filtered$wtr_qlt)
 
 # plot the new water categories
 plot <- ggplot(lakes_eco_filtered, aes(x=wtr_qlt)) + geom_bar(aes(fill = wtr_qlt))+ 
   ylab("Lakes count")+
   xlab("Water quality group")+
-  ggtitle("Lakes count per water quality group")+
+  ggtitle("Lakes count pr water quality")+
   theme(legend.position = "none")+
   theme(axis.title = element_text(size = 20), 
-        plot.title = element_text(size = 20),
+        plot.title = element_text(size = 30),
         axis.text = element_text(size = 20)) 
-plot <- plot + scale_fill_manual(values=c("#006019", "#FFBC0C", "#FF130D"))
-
+the_plot <- plot + scale_fill_manual(values=c("#006019", "#FFBC0C", "#FF130D"))
 
 # save plots
-ggsave("lakes_count_water_categories.png", plot = plot, path = "../output/", dpi = 300)
-
-
+ggsave("lakes_count_water_categories.png", plot = the_plot, path = "../output/", dpi = 300)
 
 ```
 
