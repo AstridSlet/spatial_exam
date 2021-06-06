@@ -37,20 +37,16 @@ To run the scripts for the projects of this repository I recommend cloning this 
 
 ```
 $ git clone https://github.com/AstridSlet/spatial_exam.git
-
 ```
 ### Usage
 
-When you have cloned the repository you should create an R project (.rproj file) and place it at the top level folder containing the subfolders ``` 'data```, ```'src'``` and ```'output```.
+When you have cloned the repository you should create an R project (.rproj file) and place it at the top level folder containing the subfolders ``` data```, ```src``` and ```output```.
 &nbsp;
 
 Subsequently, you need to install the package manager **pacman** by running the first cell in **preprocessing.rmd**. When this package is installed, the packages needed for each of the three scripts are installed using **pacman**, when running the first cell in the scripts.  
 &nbsp;
 
-The pre-processing script will produce two preprocessed data sets: one with the data on water quality and one with the data containing the kingfisher observations. The pre-processed data sets are placed in the folder ```data_preprocessed```. 
-&nbsp;
-
-The analysis script will produce four plots placed in the ``` output```  folder and similarily, the mapmaking script produces its plot to this folder. 
+The pre-processing script will produce two preprocessed data sets: one with the data on water quality and one with the data containing the kingfisher observations. The pre-processed data sets are placed in the folder ```data_preprocessed```. The analysis script will produce four plots placed in the ``` output```  folder and similarily, the mapmaking script produces its plot to this folder. 
 &nbsp;
 
 
