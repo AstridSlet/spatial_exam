@@ -11,12 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-# set wd to src folder of the cloned repository
-setwd() 
 
 # load packages 
 library(pacman)
-pacman::p_load("dplyr", "stringr", "tidyverse", "sf", "spatstat", "RColorBrewer", "ggplot2", "cowplot", "spatstat", "pryr")
+pacman::p_load("dplyr", "stringr", "tidyverse", "sf", "sp", "spatstat", "RColorBrewer", "ggplot2", "cowplot", "pryr")
 
 ```
 

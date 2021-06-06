@@ -11,8 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-# set wd to src folder of the cloned repository
-setwd()
+
+# install package manager 
+install.packages("pacman")
 
 # load packages 
 library(pacman)

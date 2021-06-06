@@ -3,15 +3,13 @@ dplyr
 stringr
 tidyverse
 pryr
-
 RColorBrewer
 ggplot2
 cowplot
-
 sf
+raster
 spatstat
 leaflet
-
 htmltools
 htmlwidgets
 

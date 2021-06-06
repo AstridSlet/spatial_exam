@@ -22,30 +22,40 @@ This repository includes the files related to our final project in Spatial Analy
 
 | Folder | Description|
 |--------|:-----------|
-```src``` | project folder holding main scripts. 
-```data```| data folder .
-```/data_birds```| extracted data of kingfisher observations.
-```/data_water```| water quality data.
-```/data_preprocessed```| preprocessed data sets.
-```output``` | output plots and interactive map.
-```readme_images``` | images used in readme.
+```src``` | project folder holding main scripts
+```data```| data folder
+```/data_birds```| extracted data of kingfisher observations
+```/data_water```| water quality data
+```/data_preprocessed```| preprocessed data sets
+```output``` | output plots and interactive map
+```readme_images``` | images used in readme
 
 
 ## Technicalities
 
-To run the scripts for the projects of this repository I recommend cloning this repository:
+To run the scripts for the projects of this repository I recommend cloning this repository by running the following line in bash:
 
 ```
 $ git clone https://github.com/AstridSlet/spatial_exam.git
 
 ```
+### Usage
 
-
-## Contact details
-If you experience any issues with downloading the packages and installing dependencies feel free to contact us by e-mail: astrid.rybner@hotmail.com
+When you have cloned the repository you should create an R project (.rproj file) and place it at the top level folder containing the subfolders 'data', 'src' and 'output'.
+&nbsp;
+Subsequently, you need to install the package manager 'pacman' by running the first cell in 'preprocessing.rmd'. When this package is installed, the packages needed for each of the three scripts are installed using pacman, when running the first cell in the scripts.  
+&nbsp;
+The pre-processing script will produce two preprocessed data sets: one with the data on water quality and one with the data containing the kingfisher observations. The pre-processed data sets are placed in the folder 'data_preprocessed'. 
+&nbsp;
+The analysis script will produce four plots placed in the output folder and the similarily, the mapmaking script produces its plot to the output folder. 
+&nbsp;
 
 
 ## Acknowledgements
-Credits to [Ross](https://pure.au.dk/portal/en/persons/ross-deans-kristensenmclachlan(29ad140e-0785-4e07-bdc1-8af12f15856c).html) for repo structure inspiration.
+The datasets are provided by courtesy of:
+[The Danish Ornithological Association (DOA)](https://dofbasen.dk/)
+[The Danish state’s environmental protection organization](https://mst.dk/service/miljoegis/hent-data/)
 
 
+## Contact details
+If you experience any issues with downloading the packages and installing dependencies feel free to contact us by e-mail: Sofía: au608644@uni.au.dk / Astrid: au611689@uni.au.dk

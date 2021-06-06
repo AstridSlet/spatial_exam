@@ -10,8 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-# set wd to src folder of the cloned repository
-setwd() 
+# install package manager 
+install.packages("pacman")
 
 # load packages 
 library(pacman)
@@ -27,7 +27,7 @@ files_list <- list.files(path = "../data/data_birds/", pattern = "isfugl_")
 
 # define loader function
 loader <- function(filename){
-  df <- read.csv(paste("data_birds", filename, sep="/"), sep=";", fileEncoding="latin1")
+  df <- read.csv(paste("../data/data_birds", filename, sep="/"), sep=";", fileEncoding="latin1")
   df$Year <- str_extract(filename, "\\d{4}")
   return(df)
 }
@@ -136,7 +136,7 @@ Plotting lakes count, simplified water categories:
 
 
 # plot the new water categories
-plot <- ggplot(lakes_eco_filtered, aes(x=water_quality)) + geom_bar(aes(fill = water_quality))+ 
+plot <- ggplot(lakes_eco_filtered, aes(x=wtr_qlt)) + geom_bar(aes(fill = wtr_qlt))+ 
   ylab("Lakes count")+
   xlab("Water quality group")+
   ggtitle("Lakes count per water quality group")+
