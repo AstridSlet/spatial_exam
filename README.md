@@ -52,9 +52,8 @@ The pre-processing script will produce two preprocessed data sets: one with the 
 ## Acknowledgements
 The datasets are provided by courtesy of:
 
-[The Danish Ornithological Association (DOA)](https://dofbasen.dk/)
-
-[The Danish state’s environmental protection organization](https://mst.dk/service/miljoegis/hent-data/) 
+* The Danish Ornithological Association [(DOA)](https://dofbasen.dk/)
+* The Danish state’s environmental protection organization [MST](https://mst.dk/service/miljoegis/hent-data/) 
 
 
 ## Contact details
