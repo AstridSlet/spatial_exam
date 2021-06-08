@@ -28,7 +28,7 @@ This repository includes the files related to our final project in Spatial Analy
 ```/data_water```| water quality data
 ```/data_preprocessed```| preprocessed data sets
 ```output``` | output plots and interactive map
-```readme_images``` | images used in readme
+```readme_image``` | image used in readme
 
 
 ## Technicalities
@@ -47,6 +47,17 @@ Subsequently, you need to install the package manager **pacman** by running the 
 
 The pre-processing script will produce two preprocessed data sets: one with the data on water quality and one with the data containing the kingfisher observations. The pre-processed data sets are placed in the folder ```data_preprocessed```. The analysis script will produce four plots placed in the ``` output```  folder and similarily, the mapmaking script produces its plot to this folder. 
 &nbsp;
+
+## Software metadata
+
+This script has been developed and tested using the software described in the table below. 
+
+| Folder | Description|
+|--------|:-----------|
+```Operating System``` | Microsoft Windows 10, MacOS High Sierra
+```Current software version```| RStudio 1.2.1335, © 2009-2018 RStudio, Inc.
+```Download link to software versions```| R:​ ​https://cran.r-project.org/bin/
+Rstudio:​ ​https://rstudio.com/products/rstudio/download/ 
 
 
 ## Acknowledgements
