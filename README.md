@@ -3,7 +3,7 @@
 &nbsp;
 &nbsp;
 
-<p align="center"> <img src="readme_images/isfugl.jpg" alt="Logo" width="400" height="300"></a> 
+<p align="center"> <img src="readme_image/isfugl.jpg" alt="Logo" width="400" height="300"></a> 
 
 &nbsp;
 &nbsp;
