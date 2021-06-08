@@ -52,12 +52,13 @@ The pre-processing script will produce two preprocessed data sets: one with the 
 
 This script has been developed and tested using the software described in the table below. 
 
-| Folder | Description|
+| Software | Description|
 |--------|:-----------|
 ```Operating System``` | Microsoft Windows 10, MacOS High Sierra
 ```Current software version```| RStudio 1.2.1335, © 2009-2018 RStudio, Inc.
 ```Download link to software versions```| R:​ ​https://cran.r-project.org/bin/
-Rstudio:​ ​https://rstudio.com/products/rstudio/download/ 
+``` ```| Rstudio:​ ​https://rstudio.com/products/rstudio/download/ 
+
 
 
 ## Acknowledgements
@@ -68,4 +69,4 @@ The datasets are provided by courtesy of:
 
 
 ## Contact details
-If you experience any issues with downloading the packages and installing dependencies feel free to contact us by e-mail: Sofía: au608644@uni.au.dk / Astrid: au611689@uni.au.dk
+If you experience any issues with downloading the packages and installing dependencies feel free to contact us by e-mail: Sofía: 201805499@post.au.dk / Astrid: 201808935@post.au.dk
